@@ -233,6 +233,7 @@ function renderTournament() {
 /* ── Render groups ── */
 function renderGroups() {
   const wrapper = document.getElementById('groupsWrapper');
+  const scrollPositions = Array.from(wrapper.querySelectorAll('.group-match-scroll')).map(el => el.scrollTop);
   wrapper.innerHTML = '';
   groups.forEach((group, gi) => {
     const panel = document.createElement('div');
@@ -311,6 +312,9 @@ function renderGroups() {
     panel.innerHTML += matchHTML;
 
     wrapper.appendChild(panel);
+  });
+  wrapper.querySelectorAll('.group-match-scroll').forEach((el, i) => {
+    if (scrollPositions[i]) el.scrollTop = scrollPositions[i];
   });
 }
 
