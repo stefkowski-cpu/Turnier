@@ -1,3 +1,4 @@
+const APP_VERSION = 'v1.1.0';
 const DEFAULT_TEAMS = [
   'Deutschland','England','Niederlande','Spanien',
   'Italien','Portugal','Dänemark','Belgien',
@@ -11,6 +12,8 @@ let groupSize = 0;
 let groups = [];
 let knockoutDrawn = false;
 let knockoutMatches = { qf:[], sf:[], final:null };
+let customLeague = false;
+let customLeagueSize = 10;
 
 /* ── Screen navigation ── */
 function showScreen(id) {
@@ -22,6 +25,12 @@ function showScreen(id) {
 function goBack() {
   const active = document.querySelector('.screen.active');
   if (active.id === 'teamScreen') {
+    if (customLeague) {
+      showScreen('leagueSetupScreen');
+    } else {
+      showScreen('variantScreen');
+    }
+  } else if (active.id === 'leagueSetupScreen') {
     showScreen('variantScreen');
   } else if (active.id === 'tournamentScreen') {
     if (confirm('Zurück zur Mannschaftseingabe? Alle Ergebnisse gehen verloren.')) {
@@ -34,6 +43,7 @@ function goBack() {
 function goHome() {
   if (confirm('Zurück zur Startseite? Alle Daten gehen verloren.')) {
     knockoutDrawn = false;
+    customLeague = false;
     groups = [];
     showScreen('variantScreen');
   }
@@ -42,6 +52,7 @@ function goHome() {
 /* ── Step 1: Variant ── */
 function selectVariant(v) {
   variant = v;
+  customLeague = false;
   if (v === 1) {
     groupCount = 1;
     groupSize = 16;
@@ -59,6 +70,47 @@ function selectVariant(v) {
   showScreen('teamScreen');
 }
 
+/* ── Liga-Erstellung (Variante D) ── */
+function selectLeagueCreation() {
+  customLeague = true;
+  customLeagueSize = 10;
+  document.getElementById('leagueSizeSlider').value = 10;
+  document.getElementById('headerSubtitle').textContent = 'Variante D – Liga-Erstellung';
+  updateLeagueSizeDisplay();
+  showScreen('leagueSetupScreen');
+}
+
+function updateLeagueSize(val) {
+  customLeagueSize = parseInt(val);
+  updateLeagueSizeDisplay();
+}
+
+function changeLeagueSize(delta) {
+  customLeagueSize = Math.min(32, Math.max(3, customLeagueSize + delta));
+  document.getElementById('leagueSizeSlider').value = customLeagueSize;
+  updateLeagueSizeDisplay();
+}
+
+function updateLeagueSizeDisplay() {
+  document.getElementById('leagueSizeDisplay').textContent = customLeagueSize;
+  const n = customLeagueSize;
+  const hinrundeDays = (n % 2 === 0) ? n - 1 : n;
+  const totalDays = hinrundeDays * 2;
+  const totalMatches = n * (n - 1);
+  document.getElementById('leagueInfo').textContent =
+    totalDays + ' Spieltage, ' + totalMatches + ' Spiele';
+}
+
+function confirmLeagueSize() {
+  variant = 1;
+  groupCount = 1;
+  groupSize = customLeagueSize;
+  document.getElementById('headerSubtitle').textContent =
+    'Variante D – Liga mit ' + customLeagueSize + ' Mannschaften';
+  buildTeamInputs();
+  showScreen('teamScreen');
+}
+
 /* ── Step 2: Team input ── */
 function buildTeamInputs() {
   const grid = document.getElementById('teamGrid');
@@ -67,7 +119,7 @@ function buildTeamInputs() {
     const label = document.createElement('div');
     label.className = 'team-group-label';
     label.textContent = (variant === 1)
-      ? 'Liga – 16 Mannschaften'
+      ? 'Liga – ' + groupSize + ' Mannschaften'
       : 'Gruppe ' + String.fromCharCode(65 + g);
     grid.appendChild(label);
     for (let t = 0; t < groupSize; t++) {
@@ -84,8 +136,9 @@ function buildTeamInputs() {
 
 /* ── Shuffle teams randomly ── */
 function shuffleTeamsIntoGroups() {
+  const totalTeams = groupCount * groupSize;
   const allNames = [];
-  for (let i = 0; i < 16; i++) {
+  for (let i = 0; i < totalTeams; i++) {
     const el = document.getElementById('team_' + i);
     if (el) allNames.push(el.value.trim() || DEFAULT_TEAMS[i] || ('Team ' + (i+1)));
   }
@@ -93,7 +146,7 @@ function shuffleTeamsIntoGroups() {
     const j = Math.floor(Math.random() * (i + 1));
     [allNames[i], allNames[j]] = [allNames[j], allNames[i]];
   }
-  for (let i = 0; i < 16; i++) {
+  for (let i = 0; i < totalTeams; i++) {
     const el = document.getElementById('team_' + i);
     if (el) el.value = allNames[i];
   }
