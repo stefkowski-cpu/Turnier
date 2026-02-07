@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Turnier-Rechner</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+  <h1>Turnier-Rechner</h1>
+  <div class="subtitle" id="headerSubtitle"></div>
+</div>
+
+<!-- Screen 1: Variant Selection -->
+<div id="variantScreen" class="screen active">
+  <div class="variant-title">Turniermodus wählen</div>
+  <div class="variant-cards">
+    <div class="variant-card" onclick="selectVariant(2)">
+      <div class="variant-icon">&#9917;</div>
+      <h3>Variante A</h3>
+      <p>2 Gruppen &times; 8 Mannschaften<br><br>
+      VF: 1A vs 4B, 2A vs 3B, usw.<br>
+      Halbfinale &amp; Finale</p>
+    </div>
+    <div class="variant-card" onclick="selectVariant(4)">
+      <div class="variant-icon">&#127942;</div>
+      <h3>Variante B</h3>
+      <p>4 Gruppen &times; 4 Mannschaften<br><br>
+      VF: Sieger vs Zweite (Auslosung)<br>
+      Halbfinale &amp; Finale</p>
+    </div>
+    <div class="variant-card" onclick="selectVariant(1)">
+      <div class="variant-icon">&#127941;</div>
+      <h3>Variante C</h3>
+      <p>1 Liga &times; 16 Mannschaften<br><br>
+      Hin- &amp; Rückrunde<br>
+      30 Spieltage, 240 Spiele</p>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 2: Team Input -->
+<div id="teamScreen" class="screen">
+  <div class="team-input-title">Mannschaften eintragen</div>
+  <div class="team-actions">
+    <button class="btn-dice" onclick="shuffleTeamsIntoGroups()">
+      <span class="dice-icon">&#127922;</span> Zufällig verteilen
+    </button>
+  </div>
+  <div class="team-grid" id="teamGrid"></div>
+  <button class="btn btn-primary" onclick="startTournament()">Turnier starten</button>
+</div>
+
+<!-- Screen 3: Tournament -->
+<div id="tournamentScreen" class="screen">
+  <div class="tournament-top-bar">
+    <button class="btn-home" onclick="goHome()">&#8962; Startseite</button>
+  </div>
+  <div class="tournament-container">
+    <div class="groups-wrapper" id="groupsWrapper"></div>
+    <div class="knockout-wrapper" id="knockoutWrapper">
+      <div class="knockout-title">K.O.-Runde</div>
+      <div class="draw-btn-wrap">
+        <button class="btn-draw" id="drawBtn" onclick="drawKnockout()" disabled>
+          Auslosung starten
+        </button>
+      </div>
+      <div class="bracket-container" id="bracketContainer"></div>
+      <div class="champion-banner" id="championBanner">
+        <div class="trophy">&#127942;</div>
+        <div class="champ-text" id="champName"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="back-link" id="backBtn" style="display:none" onclick="goBack()">&#8592; Zurück</button>
+
+<script src="script.js"></script>
+</body>
+</html>
