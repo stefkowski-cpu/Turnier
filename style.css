@@ -64,6 +64,15 @@ body {
   font-weight: 500;
 }
 
+.version {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.45);
+  font-weight: 500;
+}
+
 .screen { display: none; }
 .screen.active { display: flex; flex-direction: column; align-items: center; }
 
@@ -122,6 +131,71 @@ body {
 .variant-card .variant-icon {
   font-size: 3rem;
   margin-bottom: 14px;
+}
+
+/* ── League Setup ── */
+#leagueSetupScreen {
+  justify-content: center;
+  min-height: calc(100vh - 65px);
+  padding: 40px 20px;
+}
+
+.league-setup-title {
+  font-size: 1.4rem;
+  color: var(--primary-dark);
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.league-size-display {
+  font-size: 4rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 12px;
+  line-height: 1;
+}
+
+.league-size-picker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.size-arrow {
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: var(--text-dim);
+  user-select: none;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  transition: all 0.15s;
+  font-weight: 700;
+}
+
+.size-arrow:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: scale(1.1);
+}
+
+.league-size-picker input[type="range"] {
+  width: 240px;
+  accent-color: var(--primary);
+  height: 6px;
+}
+
+.league-info {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  font-weight: 500;
 }
 
 /* ── Team Input ── */

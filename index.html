@@ -10,6 +10,7 @@
 
 <div class="header">
   <h1>Turnier-Rechner</h1>
+  <span class="version">v1.1.0</span>
   <div class="subtitle" id="headerSubtitle"></div>
 </div>
 
@@ -38,7 +39,27 @@
       Hin- &amp; Rückrunde<br>
       30 Spieltage, 240 Spiele</p>
     </div>
+    <div class="variant-card" onclick="selectLeagueCreation()">
+      <div class="variant-icon">&#9918;</div>
+      <h3>Variante D</h3>
+      <p>Liga-Erstellung<br><br>
+      3&ndash;32 Mannschaften<br>
+      Hin- &amp; R&uuml;ckrunde</p>
+    </div>
   </div>
+</div>
+
+<!-- Screen 1b: League Setup -->
+<div id="leagueSetupScreen" class="screen">
+  <div class="league-setup-title">Anzahl Mannschaften</div>
+  <div class="league-size-display" id="leagueSizeDisplay">10</div>
+  <div class="league-size-picker">
+    <span class="size-arrow" onclick="changeLeagueSize(-1)">&#9664;</span>
+    <input type="range" id="leagueSizeSlider" min="3" max="32" value="10" oninput="updateLeagueSize(this.value)">
+    <span class="size-arrow" onclick="changeLeagueSize(1)">&#9654;</span>
+  </div>
+  <div class="league-info" id="leagueInfo">18 Spieltage, 90 Spiele</div>
+  <button class="btn btn-primary" onclick="confirmLeagueSize()">Weiter</button>
 </div>
 
 <!-- Screen 2: Team Input -->
