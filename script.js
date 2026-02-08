@@ -1,9 +1,76 @@
-const APP_VERSION = 'v1.1.0';
+const APP_VERSION = 'v1.2.0';
 const DEFAULT_TEAMS = [
   'Deutschland','England','Niederlande','Spanien',
   'Italien','Portugal','Dänemark','Belgien',
   'Norwegen','Österreich','Schweden','Polen',
   'Ukraine','Griechenland','Kroatien','Serbien'
+];
+
+const LEAGUE_TEAMS = [
+  { name: 'Spanien', flag: '🇪🇸' },
+  { name: 'Argentinien', flag: '🇦🇷' },
+  { name: 'Frankreich', flag: '🇫🇷' },
+  { name: 'England', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+  { name: 'Brasilien', flag: '🇧🇷' },
+  { name: 'Portugal', flag: '🇵🇹' },
+  { name: 'Niederlande', flag: '🇳🇱' },
+  { name: 'Marokko', flag: '🇲🇦' },
+  { name: 'Belgien', flag: '🇧🇪' },
+  { name: 'Deutschland', flag: '🇩🇪' },
+  { name: 'Kroatien', flag: '🇭🇷' },
+  { name: 'Senegal', flag: '🇸🇳' },
+  { name: 'Italien', flag: '🇮🇹' },
+  { name: 'Kolumbien', flag: '🇨🇴' },
+  { name: 'USA', flag: '🇺🇸' },
+  { name: 'Mexiko', flag: '🇲🇽' },
+  { name: 'Uruguay', flag: '🇺🇾' },
+  { name: 'Schweiz', flag: '🇨🇭' },
+  { name: 'Japan', flag: '🇯🇵' },
+  { name: 'IR Iran', flag: '🇮🇷' },
+  { name: 'Dänemark', flag: '🇩🇰' },
+  { name: 'Republik Korea', flag: '🇰🇷' },
+  { name: 'Ecuador', flag: '🇪🇨' },
+  { name: 'Österreich', flag: '🇦🇹' },
+  { name: 'Türkei', flag: '🇹🇷' },
+  { name: 'Nigeria', flag: '🇳🇬' },
+  { name: 'Australien', flag: '🇦🇺' },
+  { name: 'Algerien', flag: '🇩🇿' },
+  { name: 'Kanada', flag: '🇨🇦' },
+  { name: 'Ukraine', flag: '🇺🇦' },
+  { name: 'Ägypten', flag: '🇪🇬' },
+  { name: 'Norwegen', flag: '🇳🇴' },
+  { name: 'Panama', flag: '🇵🇦' },
+  { name: 'Polen', flag: '🇵🇱' },
+  { name: 'Wales', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿' },
+  { name: 'Russland', flag: '🇷🇺' },
+  { name: 'Elfenbeinküste', flag: '🇨🇮' },
+  { name: 'Schottland', flag: '🏴󠁧󠁢󠁳󠁣󠁴󠁿' },
+  { name: 'Serbien', flag: '🇷🇸' },
+  { name: 'Paraguay', flag: '🇵🇾' },
+  { name: 'Ungarn', flag: '🇭🇺' },
+  { name: 'Schweden', flag: '🇸🇪' },
+  { name: 'Tschechien', flag: '🇨🇿' },
+  { name: 'Slowakei', flag: '🇸🇰' },
+  { name: 'Kamerun', flag: '🇨🇲' },
+  { name: 'Griechenland', flag: '🇬🇷' },
+  { name: 'Tunesien', flag: '🇹🇳' },
+  { name: 'DR Kongo', flag: '🇨🇩' },
+  { name: 'Rumänien', flag: '🇷🇴' },
+  { name: 'Venezuela', flag: '🇻🇪' },
+  { name: 'Costa Rica', flag: '🇨🇷' },
+  { name: 'Usbekistan', flag: '🇺🇿' },
+  { name: 'Peru', flag: '🇵🇪' },
+  { name: 'Mali', flag: '🇲🇱' },
+  { name: 'Chile', flag: '🇨🇱' },
+  { name: 'Katar', flag: '🇶🇦' },
+  { name: 'Slowenien', flag: '🇸🇮' },
+  { name: 'Irak', flag: '🇮🇶' },
+  { name: 'Republik Irland', flag: '🇮🇪' },
+  { name: 'Südafrika', flag: '🇿🇦' },
+  { name: 'Saudiarabien', flag: '🇸🇦' },
+  { name: 'Burkina Faso', flag: '🇧🇫' },
+  { name: 'Albanien', flag: '🇦🇱' },
+  { name: 'Jordanien', flag: '🇯🇴' },
 ];
 
 let variant = 0;
@@ -13,7 +80,7 @@ let groups = [];
 let knockoutDrawn = false;
 let knockoutMatches = { qf:[], sf:[], final:null };
 let customLeague = false;
-let customLeagueSize = 10;
+let selectedTeams = new Set();
 
 /* ── Screen navigation ── */
 function showScreen(id) {
@@ -25,17 +92,16 @@ function showScreen(id) {
 function goBack() {
   const active = document.querySelector('.screen.active');
   if (active.id === 'teamScreen') {
-    if (customLeague) {
-      showScreen('leagueSetupScreen');
-    } else {
-      showScreen('variantScreen');
-    }
+    showScreen('variantScreen');
   } else if (active.id === 'leagueSetupScreen') {
     showScreen('variantScreen');
   } else if (active.id === 'tournamentScreen') {
-    if (confirm('Zurück zur Mannschaftseingabe? Alle Ergebnisse gehen verloren.')) {
+    const msg = customLeague
+      ? 'Zurück zur Mannschaftsauswahl? Alle Ergebnisse gehen verloren.'
+      : 'Zurück zur Mannschaftseingabe? Alle Ergebnisse gehen verloren.';
+    if (confirm(msg)) {
       knockoutDrawn = false;
-      showScreen('teamScreen');
+      showScreen(customLeague ? 'leagueSetupScreen' : 'teamScreen');
     }
   }
 }
@@ -73,42 +139,85 @@ function selectVariant(v) {
 /* ── Liga-Erstellung (Variante D) ── */
 function selectLeagueCreation() {
   customLeague = true;
-  customLeagueSize = 10;
-  document.getElementById('leagueSizeSlider').value = 10;
+  selectedTeams.clear();
   document.getElementById('headerSubtitle').textContent = 'Variante D – Liga-Erstellung';
-  updateLeagueSizeDisplay();
+  renderLeagueTeams();
+  updateLeagueSelectionInfo();
   showScreen('leagueSetupScreen');
 }
 
-function updateLeagueSize(val) {
-  customLeagueSize = parseInt(val);
-  updateLeagueSizeDisplay();
+function renderLeagueTeams() {
+  const grid = document.getElementById('leagueTeamGrid');
+  grid.innerHTML = '';
+  LEAGUE_TEAMS.forEach((team, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'league-team-chip' + (selectedTeams.has(i) ? ' selected' : '');
+    chip.onclick = () => toggleLeagueTeam(i);
+    chip.innerHTML = '<span class="chip-flag">' + team.flag + '</span><span class="chip-name">' + team.name + '</span>';
+    grid.appendChild(chip);
+  });
 }
 
-function changeLeagueSize(delta) {
-  customLeagueSize = Math.min(32, Math.max(3, customLeagueSize + delta));
-  document.getElementById('leagueSizeSlider').value = customLeagueSize;
-  updateLeagueSizeDisplay();
+function toggleLeagueTeam(index) {
+  if (selectedTeams.has(index)) {
+    selectedTeams.delete(index);
+  } else {
+    if (selectedTeams.size >= 32) return;
+    selectedTeams.add(index);
+  }
+  const chips = document.getElementById('leagueTeamGrid').children;
+  chips[index].classList.toggle('selected', selectedTeams.has(index));
+  updateLeagueSelectionInfo();
 }
 
-function updateLeagueSizeDisplay() {
-  document.getElementById('leagueSizeDisplay').textContent = customLeagueSize;
-  const n = customLeagueSize;
-  const hinrundeDays = (n % 2 === 0) ? n - 1 : n;
-  const totalDays = hinrundeDays * 2;
-  const totalMatches = n * (n - 1);
-  document.getElementById('leagueInfo').textContent =
-    totalDays + ' Spieltage, ' + totalMatches + ' Spiele';
+function randomLeagueSelection() {
+  selectedTeams.clear();
+  const count = 8 + Math.floor(Math.random() * 9);
+  const indices = [...Array(LEAGUE_TEAMS.length).keys()];
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  indices.slice(0, count).forEach(i => selectedTeams.add(i));
+  renderLeagueTeams();
+  updateLeagueSelectionInfo();
 }
 
-function confirmLeagueSize() {
+function updateLeagueSelectionInfo() {
+  const count = selectedTeams.size;
+  const valid = count >= 3 && count <= 32;
+  document.getElementById('leagueSelectionInfo').textContent =
+    count + ' ausgewählt (3–32 erforderlich)';
+  document.getElementById('leagueStartBtn').disabled = !valid;
+  if (valid) {
+    const n = count;
+    const hinrundeDays = (n % 2 === 0) ? n - 1 : n;
+    const totalDays = hinrundeDays * 2;
+    const totalMatches = n * (n - 1);
+    document.getElementById('leagueInfo').textContent =
+      totalDays + ' Spieltage, ' + totalMatches + ' Spiele';
+  } else {
+    document.getElementById('leagueInfo').textContent = '';
+  }
+}
+
+function startCustomLeague() {
+  const teams = [...selectedTeams].map(i => LEAGUE_TEAMS[i].flag + ' ' + LEAGUE_TEAMS[i].name);
   variant = 1;
   groupCount = 1;
-  groupSize = customLeagueSize;
+  groupSize = teams.length;
+  groups = [{
+    name: 'Liga',
+    teams: teams,
+    matches: generateLeagueSchedule(teams)
+  }];
+  knockoutDrawn = false;
+  knockoutMatches = { qf:[], sf:[], final:null };
+  document.getElementById('knockoutWrapper').classList.add('hidden');
   document.getElementById('headerSubtitle').textContent =
-    'Variante D – Liga mit ' + customLeagueSize + ' Mannschaften';
-  buildTeamInputs();
-  showScreen('teamScreen');
+    'Variante D – Liga mit ' + teams.length + ' Mannschaften';
+  renderTournament();
+  showScreen('tournamentScreen');
 }
 
 /* ── Step 2: Team input ── */

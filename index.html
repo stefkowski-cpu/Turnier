@@ -10,7 +10,7 @@
 
 <div class="header">
   <h1>Turnier-Rechner</h1>
-  <span class="version">v1.1.0</span>
+  <span class="version">v1.2.0</span>
   <div class="subtitle" id="headerSubtitle"></div>
 </div>
 
@@ -51,15 +51,16 @@
 
 <!-- Screen 1b: League Setup -->
 <div id="leagueSetupScreen" class="screen">
-  <div class="league-setup-title">Anzahl Mannschaften</div>
-  <div class="league-size-display" id="leagueSizeDisplay">10</div>
-  <div class="league-size-picker">
-    <span class="size-arrow" onclick="changeLeagueSize(-1)">&#9664;</span>
-    <input type="range" id="leagueSizeSlider" min="3" max="32" value="10" oninput="updateLeagueSize(this.value)">
-    <span class="size-arrow" onclick="changeLeagueSize(1)">&#9654;</span>
+  <div class="league-setup-title">Mannschaften auswählen</div>
+  <div class="league-selection-info" id="leagueSelectionInfo">0 ausgewählt (3–32 erforderlich)</div>
+  <div class="league-info" id="leagueInfo"></div>
+  <div class="league-actions">
+    <button class="btn-dice" onclick="randomLeagueSelection()">
+      <span class="dice-icon">&#127922;</span> Zufällig auswählen
+    </button>
   </div>
-  <div class="league-info" id="leagueInfo">18 Spieltage, 90 Spiele</div>
-  <button class="btn btn-primary" onclick="confirmLeagueSize()">Weiter</button>
+  <div class="league-team-grid" id="leagueTeamGrid"></div>
+  <button class="btn btn-primary" id="leagueStartBtn" onclick="startCustomLeague()" disabled>Liga starten</button>
 </div>
 
 <!-- Screen 2: Team Input -->
