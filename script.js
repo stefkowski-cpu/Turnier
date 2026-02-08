@@ -1,4 +1,4 @@
-const APP_VERSION = 'v1.2.0';
+const APP_VERSION = 'v1.3.0';
 const DEFAULT_TEAMS = [
   'Deutschland','England','Niederlande','Spanien',
   'Italien','Portugal','Dänemark','Belgien',
@@ -82,6 +82,14 @@ let knockoutMatches = { qf:[], sf:[], final:null };
 let customLeague = false;
 let selectedTeams = new Set();
 
+/* ── Twemoji helper ── */
+function parseEmojis(el) {
+  if (typeof twemoji !== 'undefined') {
+    twemoji.parse(el, { folder: 'svg', ext: '.svg' });
+  }
+}
+document.addEventListener('DOMContentLoaded', function() { parseEmojis(document.body); });
+
 /* ── Screen navigation ── */
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -156,6 +164,7 @@ function renderLeagueTeams() {
     chip.innerHTML = '<span class="chip-flag">' + team.flag + '</span><span class="chip-name">' + team.name + '</span>';
     grid.appendChild(chip);
   });
+  parseEmojis(grid);
 }
 
 function toggleLeagueTeam(index) {
@@ -478,6 +487,7 @@ function renderGroups() {
   wrapper.querySelectorAll('.group-match-scroll').forEach((el, i) => {
     if (scrollPositions[i]) el.scrollTop = scrollPositions[i];
   });
+  parseEmojis(wrapper);
 }
 
 function buildScoreControl(gi, mi, side, val) {
@@ -711,6 +721,7 @@ function renderKnockout() {
   container.appendChild(buildBracketRound('Viertelfinale', knockoutMatches.qf, 'qf'));
   container.appendChild(buildBracketRound('Halbfinale', knockoutMatches.sf, 'sf'));
   container.appendChild(buildBracketRound('Finale', [knockoutMatches.final], 'final'));
+  parseEmojis(document.getElementById('knockoutWrapper'));
 }
 
 function buildBracketRound(title, matches, roundKey) {
