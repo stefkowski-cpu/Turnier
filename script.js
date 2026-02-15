@@ -1,4 +1,4 @@
-const APP_VERSION = 'v1.3.0';
+const APP_VERSION = 'v1.4.0';
 const DEFAULT_TEAMS = [
   'Deutschland','England','Niederlande','Spanien',
   'Italien','Portugal','Dänemark','Belgien',
@@ -181,7 +181,10 @@ function toggleLeagueTeam(index) {
 
 function randomLeagueSelection() {
   selectedTeams.clear();
-  const count = 8 + Math.floor(Math.random() * 9);
+  const sel = document.getElementById('leagueCountSelect').value;
+  const count = (sel === 'random')
+    ? 3 + Math.floor(Math.random() * 30)
+    : parseInt(sel);
   const indices = [...Array(LEAGUE_TEAMS.length).keys()];
   for (let i = indices.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));

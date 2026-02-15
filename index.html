@@ -11,7 +11,7 @@
 
 <div class="header">
   <h1>Turnier-Rechner</h1>
-  <span class="version">v1.3.0</span>
+  <span class="version">v1.4.0</span>
   <div class="subtitle" id="headerSubtitle"></div>
 </div>
 
@@ -56,6 +56,25 @@
   <div class="league-selection-info" id="leagueSelectionInfo">0 ausgewählt (3–32 erforderlich)</div>
   <div class="league-info" id="leagueInfo"></div>
   <div class="league-actions">
+    <select id="leagueCountSelect" class="league-count-select">
+      <option value="random">Zufällig</option>
+      <option value="3">3 Mannschaften</option>
+      <option value="4">4 Mannschaften</option>
+      <option value="5">5 Mannschaften</option>
+      <option value="6">6 Mannschaften</option>
+      <option value="7">7 Mannschaften</option>
+      <option value="8">8 Mannschaften</option>
+      <option value="9">9 Mannschaften</option>
+      <option value="10">10 Mannschaften</option>
+      <option value="12">12 Mannschaften</option>
+      <option value="14">14 Mannschaften</option>
+      <option value="16" selected>16 Mannschaften</option>
+      <option value="18">18 Mannschaften</option>
+      <option value="20">20 Mannschaften</option>
+      <option value="24">24 Mannschaften</option>
+      <option value="28">28 Mannschaften</option>
+      <option value="32">32 Mannschaften</option>
+    </select>
     <button class="btn-dice" onclick="randomLeagueSelection()">
       <span class="dice-icon">&#127922;</span> Zufällig auswählen
     </button>
