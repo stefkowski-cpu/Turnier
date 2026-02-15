@@ -1,4 +1,4 @@
-const APP_VERSION = 'v1.4.0';
+const APP_VERSION = 'v1.5.0';
 const DEFAULT_TEAMS = [
   'Deutschland','England','Niederlande','Spanien',
   'Italien','Portugal','Dänemark','Belgien',
@@ -407,28 +407,32 @@ function renderTournament() {
 /* ── Render groups ── */
 function renderGroups() {
   const wrapper = document.getElementById('groupsWrapper');
-  const scrollPositions = Array.from(wrapper.querySelectorAll('.group-match-scroll')).map(el => el.scrollTop);
+  // Save scroll positions for both layout types
+  const matchScrolls = Array.from(wrapper.querySelectorAll('.group-match-scroll, .league-matches-col')).map(el => el.scrollTop);
+  const tableScrolls = Array.from(wrapper.querySelectorAll('.league-table-col')).map(el => el.scrollTop);
   wrapper.innerHTML = '';
+
   groups.forEach((group, gi) => {
+    const isLeague = (variant === 1);
     const panel = document.createElement('div');
-    panel.className = 'group-panel' + (variant === 1 ? ' league-panel' : '');
+    panel.className = 'group-panel' + (isLeague ? ' league-panel' : '');
 
-    // Sticky top: header + table
-    let stickyHTML = `<div class="group-sticky-top">
-      <div class="group-panel-header">
-        <span>${group.name}</span>
-        <button class="group-dice-btn" onclick="randomGroupResults(${gi})">
-          &#127922; Alle simulieren
-        </button>
-      </div>`;
+    // Header
+    const headerHTML = `<div class="group-panel-header">
+      <span>${group.name}</span>
+      <button class="group-dice-btn" onclick="randomGroupResults(${gi})">
+        &#127922; Alle simulieren
+      </button>
+    </div>`;
 
+    // Standings table
     const standings = calcStandings(group);
     const qualifyCount = (variant === 2) ? 4 : (variant === 4) ? 2 : 0;
-    stickyHTML += `<table class="standings-table">
+    let tableHTML = `<table class="standings-table">
       <tr><th>#</th><th>Mannschaft</th><th>Sp</th><th>S</th><th>U</th><th>N</th><th>T</th><th>GT</th><th>TD</th><th>Pkt</th></tr>`;
     standings.forEach((s, pos) => {
       const qClass = (qualifyCount > 0 && pos < qualifyCount) ? ' qualified' : '';
-      stickyHTML += `<tr class="${qClass}">
+      tableHTML += `<tr class="${qClass}">
         <td>${pos + 1}</td>
         <td>${s.name}</td><td>${s.played}</td>
         <td>${s.w}</td><td>${s.d}</td><td>${s.l}</td>
@@ -437,17 +441,14 @@ function renderGroups() {
         <td><strong>${s.pts}</strong></td>
       </tr>`;
     });
-    stickyHTML += '</table></div>';
-    panel.innerHTML = stickyHTML;
+    tableHTML += '</table>';
 
-    // Scrollable match list
-    const isLeague = (variant === 1);
-    let matchHTML = `<div class="group-match-scroll"><div class="match-list${isLeague ? ' league-match-list' : ''}">`;
+    // Match list
+    let matchHTML = '';
     let currentDay = 0;
     let currentHalf = 0;
 
     group.matches.forEach((m, mi) => {
-      // Half label for league
       if (isLeague && m.half !== currentHalf) {
         currentHalf = m.half;
         currentDay = 0;
@@ -476,19 +477,38 @@ function renderGroups() {
           </span>
         </div>`;
 
-      // Close match-day-block if next match is a different day or this is the last match
       const nextMatch = group.matches[mi + 1];
       if (!nextMatch || nextMatch.day !== currentDay || (isLeague && nextMatch.half !== currentHalf)) {
-        matchHTML += '</div>'; // close match-day-block
+        matchHTML += '</div>';
       }
     });
-    matchHTML += '</div></div>'; // close match-list + group-match-scroll
-    panel.innerHTML += matchHTML;
+
+    if (isLeague) {
+      // Side-by-side layout: table left, matches right
+      panel.innerHTML = headerHTML +
+        `<div class="league-body">
+          <div class="league-table-col">${tableHTML}</div>
+          <div class="league-matches-col">
+            <div class="match-list league-match-list">${matchHTML}</div>
+          </div>
+        </div>`;
+    } else {
+      // Stacked layout: sticky header+table on top, matches below
+      panel.innerHTML = `<div class="group-sticky-top">${headerHTML}${tableHTML}</div>
+        <div class="group-match-scroll">
+          <div class="match-list">${matchHTML}</div>
+        </div>`;
+    }
 
     wrapper.appendChild(panel);
   });
-  wrapper.querySelectorAll('.group-match-scroll').forEach((el, i) => {
-    if (scrollPositions[i]) el.scrollTop = scrollPositions[i];
+
+  // Restore scroll positions
+  wrapper.querySelectorAll('.group-match-scroll, .league-matches-col').forEach((el, i) => {
+    if (matchScrolls[i]) el.scrollTop = matchScrolls[i];
+  });
+  wrapper.querySelectorAll('.league-table-col').forEach((el, i) => {
+    if (tableScrolls[i]) el.scrollTop = tableScrolls[i];
   });
   parseEmojis(wrapper);
 }

@@ -436,7 +436,38 @@ body {
 .group-panel.league-panel {
   max-width: 100%;
   flex: 1 1 100%;
-  max-height: none;
+  height: calc(100vh - 130px);
+}
+
+.tournament-container:has(.league-panel) {
+  max-width: 3200px;
+}
+
+/* League side-by-side layout */
+.league-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.league-table-col {
+  flex: 0 0 auto;
+  overflow-y: auto;
+  border-right: 2px solid var(--border);
+  background: var(--bg-card);
+}
+
+.league-table-col .standings-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.league-matches-col {
+  flex: 1;
+  overflow-y: auto;
+  min-width: 0;
 }
 
 .group-sticky-top {
@@ -990,8 +1021,24 @@ body {
   break-before: auto;
 }
 
+@media (min-width: 1600px) {
+  .match-list.league-match-list { column-count: 4; }
+}
+
+@media (min-width: 2200px) {
+  .match-list.league-match-list { column-count: 5; }
+}
+
 @media (max-width: 1100px) {
   .match-list.league-match-list { column-count: 2; }
+  .league-body { flex-direction: column; }
+  .league-table-col {
+    border-right: none;
+    border-bottom: 2px solid var(--border);
+    max-height: 35vh;
+    flex-shrink: 0;
+  }
+  .group-panel.league-panel { height: auto; max-height: none; }
 }
 
 @media (max-width: 800px) {
